@@ -20,10 +20,13 @@ on:
       - ready_for_review
       - labeled
 
-# Read-only access to the repo; write to pull-requests so review comments can be posted.
+# Read-only access to the repo; write to pull-requests so review comments can be
+# posted; write to id-token so the job can mint the GitHub OIDC token the action
+# exchanges for Claude credentials (no Anthropic API key stored in secrets).
 permissions:
   contents: read
   pull-requests: write
+  id-token: write
 
 jobs:
   claude-code-review:
