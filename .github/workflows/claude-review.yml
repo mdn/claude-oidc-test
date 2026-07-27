@@ -113,6 +113,7 @@ jobs:
       - name: Claude code review
         uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
         with:
+          show_full_output: true
           anthropic_federation_rule_id: fdrl_01BKpJHU7Zbk3Aeu1uSS9zLH
           anthropic_organization_id: bc6e8deb-65ec-4bee-8ca0-b8ff93b3295f
           anthropic_service_account_id: svac_01FtDyBMqDtyf1zQgMYg98n2
