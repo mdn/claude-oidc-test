@@ -59,7 +59,7 @@ jobs:
       # Check out the base branch only - never the untrusted PR head.
       # nosemgrep: yaml.github-actions.security.pull-request-target-code-checkout.pull-request-target-code-checkout
       - name: Checkout trusted base branch
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           # Don't leave credentials on disk for later steps.
@@ -111,7 +111,7 @@ jobs:
       # below keep Claude read-only - it inspects the data and posts comments,
       # but does not apply the diff or execute any repository code.
       - name: Claude code review
-        uses: anthropics/claude-code-action@ba0aafd4308cbba7165f9f2cdb0cfbed5a3c99ce # v1.0.168
+        uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b # v1.0.183
         with:
           anthropic_federation_rule_id: fdrl_01BKpJHU7Zbk3Aeu1uSS9zLH
           anthropic_organization_id: bc6e8deb-65ec-4bee-8ca0-b8ff93b3295f
