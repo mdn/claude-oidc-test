@@ -138,7 +138,7 @@ jobs:
           # DEBUG: remove once OIDC auth is working - echoes untrusted PR
           # content into the job log.
           show_full_output: true
-          anthropic_federation_rule_id: fdrl_01BKpJHU7Zbk3Aeu1uSS9zLH
+          anthropic_federation_rule_id: fdrl_01NjNUAm6hgd28kiXMTHpoja
           anthropic_organization_id: bc6e8deb-65ec-4bee-8ca0-b8ff93b3295f
           anthropic_service_account_id: svac_01FtDyBMqDtyf1zQgMYg98n2
           # Required because the federation rule is enabled for all workspaces
