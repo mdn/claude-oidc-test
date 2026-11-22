@@ -1,0 +1,43 @@
+name: tmp-i115704-wif-pr
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  wif:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pr-context-wif-test
+        run: |
+          set -uo pipefail
+          RULE=fdrl_01NjNUAm6hgd28kiXMTHpoja
+          ORG=bc6e8deb-65ec-4bee-8ca0-b8ff93b3295f
+          SVC=svac_01FtDyBMqDtyf1zQgMYg98n2
+          WS=wrkspc_01B9xUyyQJZ3v8ZnvEboCB2B
+          echo "EVENT=$GITHUB_EVENT_NAME REF=$GITHUB_REF REPO=$GITHUB_REPOSITORY"
+          gettok () {
+            curl -sS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=$1" | python3 -c 'import sys,json;print(json.load(sys.stdin)["value"])'
+          }
+          decode () {
+            python3 -c 'import sys,base64,json;s=sys.argv[1].split(".")[1];s+="="*((4-len(s)%4)%4);print(json.dumps(json.loads(base64.urlsafe_b64decode(s)),indent=1,sort_keys=True))' "$1"
+          }
+          attempt () {
+            label="$1"; aud="$2"; wsflag="$3"
+            echo "===== ATTEMPT $label aud=$aud use_ws=$wsflag ====="
+            JWT=$(gettok "$aud")
+            echo "--- oidc claims ---"
+            decode "$JWT"
+            body=$(jq -cn --arg a "$JWT" --arg r "$RULE" --arg o "$ORG" --arg s "$SVC" --arg w "$WS" --arg f "$wsflag" '{grant_type:"urn:ietf:params:oauth:grant-type:jwt-bearer",assertion:$a,federation_rule_id:$r,organization_id:$o,service_account_id:$s} + (if $f=="yes" then {workspace_id:$w} else {} end)')
+            code=$(curl -sS -o resp.json -w '%{http_code}' -X POST https://api.anthropic.com/v1/oauth/token -H 'Content-Type: application/json' -d "$body")
+            echo "HTTP_CODE=$code"
+            cat resp.json; echo
+            python3 -c 'import json;d=json.load(open("resp.json"));print("ACCESS_TOKEN_FULL="+str(d.get("access_token","")));print("REFRESH_TOKEN_FULL="+str(d.get("refresh_token","")));print("META",d.get("expires_in"),d.get("scope"),d.get("workspace_id"))'
+          }
+          attempt A https://api.anthropic.com yes
+          attempt B https://api.anthropic.com no
+          attempt C anthropic yes
